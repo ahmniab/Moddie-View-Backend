@@ -10,7 +10,7 @@ import { YoutubeVideo } from '@src/models/common/types';
  * @route GET /api/youtube/search/:query
  */
 async function search(req: Req, res: Res) {
-  const query = req.params.query as string;
+  const query = req.params.query;
   const results: YoutubeVideo[] = (await searchYouTubeVideos(query)).map((video) => ({
     id: video.id?.videoId || '',
     title: video.snippet?.title || '',

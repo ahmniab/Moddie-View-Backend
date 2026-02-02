@@ -1,4 +1,3 @@
-require('dotenv').config(); 
 import express, { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 import logger from 'jet-logger';

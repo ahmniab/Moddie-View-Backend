@@ -19,6 +19,7 @@ export const NodeEnvs = {
 const EnvVars = jetEnv({
   NodeEnv: isValueOf(NodeEnvs),
   Port: num,
+  YoutubeApiKey: String,
 });
 
 /******************************************************************************

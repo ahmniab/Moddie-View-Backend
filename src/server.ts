@@ -13,7 +13,7 @@ const app = express();
 
 // **** Middleware **** //
 const corsOptions = {
-  origin: ['http://localhost'],
+  origin: ['http://localhost:5173'],
   methods: 'OPTIONS,GET',
   credentials: true 
 };

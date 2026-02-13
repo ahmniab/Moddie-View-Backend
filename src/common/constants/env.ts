@@ -20,6 +20,10 @@ const EnvVars = jetEnv({
   NodeEnv: isValueOf(NodeEnvs),
   Port: num,
   YoutubeApiKey: String,
+  RedisUserName: String,
+  RedisPassword: String,
+  RedisHost: String,
+  RedisPort: num,
 });
 
 /******************************************************************************

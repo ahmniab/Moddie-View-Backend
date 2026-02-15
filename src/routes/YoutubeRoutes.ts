@@ -2,7 +2,7 @@ import HttpStatusCodes from '@src/common/constants/HttpStatusCodes';
 import { searchYouTubeVideos } from '@src/services/YoutubeService';
 
 import { Req, Res } from './common/express-types';
-import { YoutubeVideo } from '@src/models/common/types';
+import { YoutubeVideo } from '@src/models/types';
 
 /**
  * Search YouTube videos by query.

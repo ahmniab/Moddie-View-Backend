@@ -1,4 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
 import helmet from 'helmet';
 import logger from 'jet-logger';
 import morgan from 'morgan';
@@ -8,15 +10,24 @@ import { JetPaths } from '@src/common/constants/Paths';
 import { RouteError } from '@src/common/utils/route-errors';
 import EnvVars, { NodeEnvs } from './common/constants/env';
 import cors from 'cors';
+import { getRoom, setRoom } from './lib/redis';
+import { create } from 'domain';
+import { createNewRoom } from './services/RoomService';
 
 const app = express();
 
-// **** Middleware **** //
+const server = http.createServer(app);
 const corsOptions = {
   origin: ['http://localhost:5173'],
-  methods: 'OPTIONS,GET',
+  methods: 'OPTIONS,GET,POST',
   credentials: true 
 };
+const io = new Server(server, {
+  cors: corsOptions
+});
+
+
+// **** Middleware **** //
 app.use(cors(corsOptions));
 
 app.use(express.json());
@@ -50,4 +61,16 @@ app.use((err: Error, _: Request, res: Response, next: NextFunction) => {
 
 app.get(JetPaths.Youtube.Get(), YoutubeRoutes.search);
 
-export default app;
+app.post(JetPaths.Room.Post, async (req, res) => {
+    let name : string | undefined;
+    try {
+        name = req.body.name;
+    } catch (error) {
+        name = undefined;
+    }
+    return res.status(HttpStatusCodes.CREATED).json(createNewRoom(io, name || "New Room"));
+});
+
+
+
+export default server;

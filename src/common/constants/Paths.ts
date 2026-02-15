@@ -6,6 +6,10 @@ export const Paths = {
     _: '/youtube',
     Get: '/search/:query',
   },
+  Room: {
+    _: '/room',
+    Post: '/create',
+  }
 } as const;
 
 export const JetPaths = jetPaths(Paths);

@@ -1,14 +1,6 @@
-import { isDate } from 'jet-validators';
-import { transform } from 'jet-validators/utils';
 
-/******************************************************************************
-                                Functions
-******************************************************************************/
+const validateUUID = (id: string): boolean => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+};
 
-/**
- * Convert to date object then check is a validate date.
- */
-export const transformIsDate = transform(
-  (arg) => new Date(arg as string),
-  (arg) => isDate(arg),
-);

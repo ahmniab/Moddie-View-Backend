@@ -24,6 +24,8 @@ const EnvVars = jetEnv({
   RedisPassword: String,
   RedisHost: String,
   RedisPort: num,
+  JwtSecret: String,
+  RoomExpirationTime: num,
 });
 
 /******************************************************************************

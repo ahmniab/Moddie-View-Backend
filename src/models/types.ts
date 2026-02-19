@@ -39,3 +39,23 @@ export type Room = { roomId: string; } & RoomData;
 export type RedisRoom = {
   ownerWebToken: string;
 } & Room;
+
+//////////////////////////////////////////////
+
+export interface ChatMessage {
+  id: string | undefined;
+  text: string;
+  senderId: string;
+  replyTo?: {
+    id: string;
+    text: string;
+  };
+  sentAt: number;
+}
+
+export interface ChatReaction {
+  messageId: string;
+  reaction: string;
+  senderId: string;
+  reactedAt: number;
+}

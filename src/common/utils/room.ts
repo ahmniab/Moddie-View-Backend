@@ -10,15 +10,14 @@ export const createNewRoomInstance = (roomName: string = "New Room"): RedisRoom 
         roomId: roomId,
         roomName: roomName,
         roomOwner: "",
-        users: [],
+        users: {},
         roomContent: {
-            videos: [
-                { url: "https://upload.wikimedia.org/wikipedia/commons/7/7a/Charge_-_Blender_Open_Movie-full_movie.webm" },
-                { url: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Spring_-_Blender_Open_Movie.webm" },
-            ],
-            currentIndex: 0,
+            url: "https://upload.wikimedia.org/wikipedia/commons/transcoded/a/a7/How_to_make_video.webm/How_to_make_video.webm.1080p.vp9.webm",
             isPlaying: false,
-            videoStartTime: 0,
+            videoTime: 0,
+            playbackRate: 1,
+            lastTimePlayed: 0,
+            videoType: "normal",
         },
     };
 }

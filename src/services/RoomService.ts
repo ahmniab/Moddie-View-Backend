@@ -1,18 +1,55 @@
 import { createNewRoomInstance } from "@src/common/utils/room"
-import { getRoom, setRoom, setTimeOut } from "@src/lib/redis"
+import { 
+    getRoom, 
+    setRoom, 
+    isRoomExists,
+    getAllRoomKeys,
+} from "@src/lib/redis"
 import { Server } from "socket.io";
-import {  Room } from "@src/models/types";
+import { Room } from "@src/models/types";
 import EnvVars from "@src/common/constants/env";
-import { mapUsersCommands, mapChatCommands } from "@src/common/utils/socket-io";
+import { 
+    mapUsersCommands, 
+    mapChatCommands, 
+    mapVideoCommands 
+} from "@src/common/utils/socket-io";
+import logger from 'jet-logger';
+
+
+export const initializeRoomService = (io: Server) => {
+    io.of(/^\/.*$/).use(async (socket, next) => {
+        const roomId = socket.nsp.name.slice(1); // Remove leading slash
+        
+        if (!await isRoomExists(roomId)) {
+            logger.info(`Forbidden connection attempt to: ${socket.nsp.name}`);
+            logger.info(`roomexists: ${await isRoomExists(roomId)}`);
+            socket.disconnect(); // Disconnect unauthorized namespace
+            return next(new Error('Room not found'));
+        }
+        
+        next();
+    });
+    if (EnvVars.NodeEnv === "development") {
+        logger.info("RoomService initialized with Socket.IO namespaces:");
+        getAllRoomKeys().then(keys => {
+            keys.forEach(key => initializeRoomNamespace(io, key));
+        });
+    }
+}
 
 
 export const createNewRoom = (io: Server, roomName: string = "New Room"): Room => {
     const newRoomInstance = createNewRoomInstance(roomName);
     setRoom(newRoomInstance);
-    setTimeOut(newRoomInstance.roomId, EnvVars.RoomExpirationTime);
-    io.of(newRoomInstance.roomId).use(async (socket, next) => {
-        console.log(`Socket ${socket.id} is trying to connect to room ${newRoomInstance.roomId}`);
-        const room = await getRoom(newRoomInstance.roomId);
+    initializeRoomNamespace(io, newRoomInstance.roomId);
+    return newRoomInstance;
+}
+
+const initializeRoomNamespace = (io: Server, roomId: string) => {
+    logger.info(`Initializing namespace for room: ${roomId}`);
+    io.of(roomId).use(async (socket, next) => {
+        logger.info(`Socket ${socket.id} is trying to connect to room ${roomId}`);
+        const room = await getRoom(roomId);
         const clientName = socket.handshake.query?.name as string || socket.id;
 
         if (!room) {
@@ -26,19 +63,18 @@ export const createNewRoom = (io: Server, roomName: string = "New Room"): Room =
         next();
     });
 
-    io.of(newRoomInstance.roomId).on('connection', async (socket) => {
+    io.of(roomId).on('connection', async (socket) => {
         socket.on("CMD:getRoomData", async () => {
-            console.log(`Socket ${socket.id} requested room data for room ${newRoomInstance.roomId}`);
-            const roomData = await getRoom(newRoomInstance.roomId);
+            logger.info(`Socket ${socket.id} requested room data for room ${roomId}`);
+            const roomData = await getRoom(roomId);
             if (roomData) {
                 socket.emit("roomData", roomData as Room);
             }
         });
-        mapUsersCommands(socket, newRoomInstance.roomId);
-        mapChatCommands(socket, newRoomInstance.roomId);
-        console.log(`Socket ${socket.id} connected to room ${newRoomInstance.roomId}`);
+        mapUsersCommands(socket, roomId);
+        mapChatCommands(socket, roomId);
+        mapVideoCommands(socket, roomId);
+        logger.info(`Socket ${socket.id} connected to room ${roomId}`);
 
     });
-    return newRoomInstance;
 }
-

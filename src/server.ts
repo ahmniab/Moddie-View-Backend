@@ -10,9 +10,7 @@ import { JetPaths } from '@src/common/constants/Paths';
 import { RouteError } from '@src/common/utils/route-errors';
 import EnvVars, { NodeEnvs } from './common/constants/env';
 import cors from 'cors';
-import { getRoom, setRoom } from './lib/redis';
-import { create } from 'domain';
-import { createNewRoom } from './services/RoomService';
+import { createNewRoom, initializeRoomService } from './services/RoomService';
 
 const app = express();
 
@@ -25,7 +23,7 @@ const corsOptions = {
 const io = new Server(server, {
   cors: corsOptions
 });
-
+initializeRoomService(io);
 
 // **** Middleware **** //
 app.use(cors(corsOptions));

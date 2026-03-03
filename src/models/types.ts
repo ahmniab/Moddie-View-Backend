@@ -1,8 +1,22 @@
+export type VideoType = 'youtube' | 'normal';
+
+export type VimeoVideo = {
+    platform: "vimeo";
+    id: number;
+    title: string;
+    description: string;
+    thumbnails: {
+        thumbnail_url?: string;
+        thumbnail_width?: number;
+        thumbnail_height?: number;
+  };
+};
 
 export type YoutubeVideo = {
   id: string;
   title: string;
   description: string;
+  videoType: VideoType;
   thumbnail: {
     url: string;
     width: number;
@@ -10,7 +24,18 @@ export type YoutubeVideo = {
   };
 };
 
-export type Video = { url: string; } | YoutubeVideo 
+export type NormalVideo = {
+  url: string;
+  videoType: VideoType;
+};
+
+export type PlayableVideo = {
+  isPlaying: boolean;
+  lastTimePlayed : number;
+  playbackRate: number;
+  videoTime: number;
+};
+export type Video = (( NormalVideo | YoutubeVideo | VimeoVideo ) & PlayableVideo) | null; 
 
 export type VideoPlaylist = {
   videos: Video[];
@@ -19,7 +44,7 @@ export type VideoPlaylist = {
   videoStartTime: number;
 };
 
-export type RoomContent = VideoPlaylist | null;
+export type RoomContent = Video | null;
 
 export interface UserData {
   name: string;

@@ -4,8 +4,9 @@ import {
     setRoom, 
     isRoomExists,
     getAllRoomKeys,
-} from "@src/lib/redis"
-import { Server } from "socket.io";
+} from "@src/lib/redis";
+import { SocketEvents } from "@src/common/utils/socket-io/config";
+import { Server, Socket } from "socket.io";
 import { Room } from "@src/models/types";
 import EnvVars from "@src/common/constants/env";
 import { 
@@ -14,6 +15,7 @@ import {
     mapVideoCommands 
 } from "@src/common/utils/socket-io";
 import logger from 'jet-logger';
+import { addNewUserToRoom } from "@src/common/utils/socket-io/helpers";
 
 
 export const initializeRoomService = (io: Server) => {
@@ -63,18 +65,11 @@ const initializeRoomNamespace = (io: Server, roomId: string) => {
         next();
     });
 
-    io.of(roomId).on('connection', async (socket) => {
-        socket.on("CMD:getRoomData", async () => {
-            logger.info(`Socket ${socket.id} requested room data for room ${roomId}`);
-            const roomData = await getRoom(roomId);
-            if (roomData) {
-                socket.emit("roomData", roomData as Room);
-            }
-        });
+    io.of(roomId).on(SocketEvents.CONNECTION, async (socket) => {        
+        await addNewUserToRoom(roomId, socket, "no Name");
         mapUsersCommands(socket, roomId);
         mapChatCommands(socket, roomId);
         mapVideoCommands(socket, roomId);
         logger.info(`Socket ${socket.id} connected to room ${roomId}`);
-
     });
 }

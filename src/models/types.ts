@@ -71,9 +71,12 @@ export interface ChatMessage {
   id: string | undefined;
   text: string;
   senderId: string;
+  senderName?: string;
   replyTo?: {
     id: string;
     text: string;
+    senderName?: string;
+    isOwn?: boolean;
   };
   sentAt: number;
 }

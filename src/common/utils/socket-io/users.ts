@@ -1,27 +1,48 @@
 import { Socket } from "socket.io";
-import { getRoomUsers, setRoomUsers } from "@src/lib/redis";
+import { getRoom, getRoomUsers, setRoom, setRoomUsers } from "@src/lib/redis";
 import { SocketEvents } from "./config";
 import logger from 'jet-logger';
+import { Room } from "@src/models/types";
+import { addNewUserToRoom, filterDisconnectedUsers, removeUserFromRoom } from "./helpers";
 
 export const mapUsersCommands = ( socket: Socket, roomId: string ) => {
     socket.on(SocketEvents.SET_USER_NAME, async (newName: string) => {
-        const roomUsers = await getRoomUsers(roomId);
+        logger.info(`Socket ${socket.id} is changing name to ${newName} in room ${roomId}`);
+        const roomUsers = await filterDisconnectedUsers(roomId, Array.from(socket.nsp.sockets.keys()));
         if (!roomUsers) return;
+
         const userIndex = Object.keys(roomUsers).findIndex(key => key === socket.id);
-        if (userIndex === -1) return;
-        const userKey = Object.keys(roomUsers)[userIndex];
-        roomUsers[userKey].name = newName;
+        if (userIndex === -1) {
+            addNewUserToRoom(roomId, socket, newName);
+            return;
+        }
+        
+        roomUsers[socket.id].name = newName;
         setRoomUsers(roomId, roomUsers);
-        socket.emit(SocketEvents.USERS_UPDATE, roomUsers);
+        socket.nsp.emit(SocketEvents.USERS_UPDATE, roomUsers);
     });
 
     socket.on(SocketEvents.DISCONNECT, async () => {
-        const roomUsers = await getRoomUsers(roomId);
-        if (!roomUsers) return;
-        const updatedUsers = Object.fromEntries(
-            Object.entries(roomUsers).filter(([key]) => key !== socket.id)
-        );
-        setRoomUsers(roomId, updatedUsers);
-        socket.emit(SocketEvents.USERS_UPDATE, updatedUsers);
+        filterDisconnectedUsers(roomId, Array.from(socket.nsp.sockets.keys()))
+        removeUserFromRoom(roomId, socket);
+    });
+
+    socket.on(SocketEvents.GET_ROOM_DATA, async () => {
+        filterDisconnectedUsers(roomId, Array.from(socket.nsp.sockets.keys()));
+        logger.info(`Socket ${socket.id} requested room data for room ${roomId}`);
+        const roomData = await getRoom(roomId);
+        if (roomData) {
+            socket.emit("roomData", roomData as Room);
+        }
+    });
+
+    socket.on(SocketEvents.SET_ROOM_NAME, async (newName: string) => {
+        logger.info(`Socket ${socket.id} is changing room name to ${newName} in room ${roomId}`);
+        const room = await getRoom(roomId);
+        if (room) {
+            room.roomName = newName;
+            await setRoom(room);
+            socket.nsp.emit(SocketEvents.SET_ROOM_NAME, newName);
+        }
     });
 }

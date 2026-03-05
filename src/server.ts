@@ -66,7 +66,7 @@ app.post(JetPaths.Room.Post, async (req, res) => {
     } catch (error) {
         name = undefined;
     }
-    return res.status(HttpStatusCodes.CREATED).json(createNewRoom(io, name || "New Room"));
+    return res.status(HttpStatusCodes.CREATED).json(createNewRoom(io, name));
 });
 
 

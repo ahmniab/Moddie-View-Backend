@@ -40,7 +40,7 @@ export const initializeRoomService = (io: Server) => {
 }
 
 
-export const createNewRoom = (io: Server, roomName: string = "New Room"): Room => {
+export const createNewRoom = (io: Server, roomName: string = "Moddie Room"): Room => {
     const newRoomInstance = createNewRoomInstance(roomName);
     setRoom(newRoomInstance);
     initializeRoomNamespace(io, newRoomInstance.roomId);

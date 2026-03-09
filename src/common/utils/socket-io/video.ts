@@ -68,7 +68,6 @@ export const mapVideoCommands = ( socket: Socket, roomId: string ) => {
         }
         syncVideoTime(room);
         room.roomContent.videoTime = time;
-        console.log(`video time: ${room.roomContent.videoTime} seconds (After seek)`);
         await setRoom(room);
         socket.nsp.emit(SocketEvents.CONTENT_VIDEO_SEEK, room.roomContent);
     });
@@ -87,8 +86,6 @@ const syncVideoTime = async (room: RedisRoom) => {
     if (!room || !room.roomContent) {
         return;
     }
-    console.log(`video time: ${room.roomContent.videoTime} seconds`);
     const currentTime = new Date().getTime();
     room.roomContent.videoTime = calculateVideoTime(room.roomContent.videoTime, room.roomContent.lastTimePlayed);
-    console.log(`video time: ${room.roomId}: ${room.roomContent.videoTime} seconds (After sync)`);
 }

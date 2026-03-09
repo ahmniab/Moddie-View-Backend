@@ -20,6 +20,5 @@ export const calculateVideoTime = (currentTime: number, lastTimePlayed: number) 
     if (lastTimePlayed === 0) return currentTime;
     const now = new Date().getTime();
     const elapsed = (now - lastTimePlayed) / 1000;
-    console.log(`Elapsed time: ${elapsed} seconds lastTimePlayed: ${lastTimePlayed} currentTime: ${currentTime}`);
     return currentTime + elapsed;
 }

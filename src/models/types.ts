@@ -1,5 +1,3 @@
-export type VideoType = 'youtube' | 'normal';
-
 export type VimeoVideo = {
     platform: "vimeo";
     id: number;
@@ -16,7 +14,7 @@ export type YoutubeVideo = {
   id: string;
   title: string;
   description: string;
-  videoType: VideoType;
+  platform: 'youtube';
   thumbnail: {
     url: string;
     width: number;
@@ -26,7 +24,7 @@ export type YoutubeVideo = {
 
 export type NormalVideo = {
   url: string;
-  videoType: VideoType;
+  platform: 'directmedia';
 };
 
 export type PlayableVideo = {

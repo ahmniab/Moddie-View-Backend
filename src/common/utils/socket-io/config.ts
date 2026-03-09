@@ -13,7 +13,7 @@ export const enum SocketEvents {
     CONTENT_VIDEO_SEEK                      = "CONTENT:video.seek",
     CONTENT_VIDEO_PLAYBACK_RATE_CHANGE      = "CONTENT:video.playbackRateChange",
     CONTENT_VIDEO_CHANGE_PLAYBACK_RATE      = "CONTENT:video.changePlaybackRate",
-    INITIALIZE_VIDEO                        = "CONTENT:video.initialize",
+    CONTENT_VIDEO_SYNC                      = "CONTENT:video.sync",
 
     CHAT_MESSAGE                            = "CHAT:chatMessage",
     NEW_CHAT_MESSAGE                        = "CHAT:newChatMessage",

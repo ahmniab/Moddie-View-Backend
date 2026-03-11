@@ -14,12 +14,6 @@ export const mapVideoCommands = ( socket: Socket, roomId: string ) => {
             return;
         }
         room.roomContent = content;
-        if (content){
-            content.isPlaying = false;
-            content.lastTimePlayed = new Date().getTime();
-            content.playbackRate = 1;
-            content.videoTime = 0;
-        }
         await setRoom(room);
 
         socket.nsp.emit(SocketEvents.CONTENT_CHANGE, room.roomContent);

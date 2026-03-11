@@ -5,7 +5,13 @@ import logger from 'jet-logger';
 import { Room } from "@src/models/types";
 import { addNewUserToRoom, filterDisconnectedUsers, removeUserFromRoom } from "./helpers";
 
-export const mapUsersCommands = ( socket: Socket, roomId: string ) => {
+export const mapUsersCommands = async ( socket: Socket, roomId: string ) => {
+    setTimeout(async () => {
+        const room = await getRoom(roomId);
+        if (room) {
+            socket.nsp.emit(SocketEvents.SET_ROOM_NAME, room.roomName);
+        }
+    }, 1000);
     socket.on(SocketEvents.SET_USER_NAME, async (newName: string) => {
         logger.info(`Socket ${socket.id} is changing name to ${newName} in room ${roomId}`);
         const roomUsers = await filterDisconnectedUsers(roomId, Array.from(socket.nsp.sockets.keys()));

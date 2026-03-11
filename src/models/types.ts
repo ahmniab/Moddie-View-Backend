@@ -33,7 +33,7 @@ export type PlayableVideo = {
   playbackRate: number;
   videoTime: number;
 };
-export type Video = (( NormalVideo | YoutubeVideo | VimeoVideo ) & PlayableVideo) | null; 
+export type Video = ( NormalVideo | YoutubeVideo | VimeoVideo ) & PlayableVideo; 
 
 export type VideoPlaylist = {
   videos: Video[];

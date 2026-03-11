@@ -2,7 +2,7 @@ import { RedisRoom, Room } from "../../models/types";
 import { generateUUID } from "@src/common/utils/hepers";
 import { createRoomJwt } from "@src/lib/jwt";
 
-export const createNewRoomInstance = (roomName: string = "New Room"): RedisRoom => {
+export const createNewRoomInstance = (roomName: string): RedisRoom => {
     const roomId = generateUUID();
     const roomToken = createRoomJwt(roomId);
     return {
@@ -17,7 +17,7 @@ export const createNewRoomInstance = (roomName: string = "New Room"): RedisRoom 
             videoTime: 0,
             playbackRate: 1,
             lastTimePlayed: 0,
-            videoType: "normal",
+            platform: "directmedia",
         },
     };
 }

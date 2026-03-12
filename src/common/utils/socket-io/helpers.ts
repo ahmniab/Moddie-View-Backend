@@ -1,6 +1,7 @@
-import { setRoomUsers, getRoomUsers } from "@src/lib/redis";
+import { setRoomUsers, getRoomUsers, getRoom } from "@src/lib/redis";
 import { SocketEvents } from "./config";
 import { Socket } from "socket.io";
+import { Room } from "@src/models/types";
 
 export const addNewUserToRoom = async (roomId: string, socket: Socket, name: string) => {
     const roomUsers = await filterDisconnectedUsers(roomId, Array.from(socket.nsp.sockets.keys())) || {};
@@ -36,4 +37,12 @@ export const filterDisconnectedUsers = async (roomId: string, activeSocketIds: s
     );
     await setRoomUsers(roomId, updatedUsers);
     return updatedUsers;
+}
+
+export const sendRoomDataToClient = async (socket: Socket, roomId: string) => {
+        filterDisconnectedUsers(roomId, Array.from(socket.nsp.sockets.keys()));
+    const roomData = await getRoom(roomId);
+    if (roomData) {
+        socket.emit(SocketEvents.ROOM_DATA, roomData as Room);
+    }
 }

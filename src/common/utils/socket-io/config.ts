@@ -2,6 +2,7 @@ export const enum SocketEvents {
     CONNECTION                              = "connection",
     DISCONNECT                              = "disconnect",
 
+    ROOM_DATA                               = "roomData",
     GET_ROOM_DATA                           = "CMD:getRoomData",
     SET_ROOM_NAME                           = "CMD:room.name",
     SET_USER_NAME                           = "CMD:user.name",

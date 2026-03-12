@@ -1,11 +1,11 @@
 import { Socket } from "socket.io";
-import { getRoom, getRoomUsers, setRoom, setRoomUsers } from "@src/lib/redis";
+import { getRoom, setRoom, setRoomUsers } from "@src/lib/redis";
 import { SocketEvents } from "./config";
 import logger from 'jet-logger';
-import { Room } from "@src/models/types";
-import { addNewUserToRoom, filterDisconnectedUsers, removeUserFromRoom } from "./helpers";
+import { addNewUserToRoom, filterDisconnectedUsers, removeUserFromRoom, sendRoomDataToClient } from "./helpers";
 
 export const mapUsersCommands = async ( socket: Socket, roomId: string ) => {
+    sendRoomDataToClient(socket, roomId);
     setTimeout(async () => {
         const room = await getRoom(roomId);
         if (room) {
@@ -34,12 +34,8 @@ export const mapUsersCommands = async ( socket: Socket, roomId: string ) => {
     });
 
     socket.on(SocketEvents.GET_ROOM_DATA, async () => {
-        filterDisconnectedUsers(roomId, Array.from(socket.nsp.sockets.keys()));
         logger.info(`Socket ${socket.id} requested room data for room ${roomId}`);
-        const roomData = await getRoom(roomId);
-        if (roomData) {
-            socket.emit("roomData", roomData as Room);
-        }
+        await sendRoomDataToClient(socket, roomId);
     });
 
     socket.on(SocketEvents.SET_ROOM_NAME, async (newName: string) => {
@@ -52,3 +48,4 @@ export const mapUsersCommands = async ( socket: Socket, roomId: string ) => {
         }
     });
 }
+

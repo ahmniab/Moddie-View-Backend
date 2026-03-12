@@ -1,7 +1,9 @@
+import nanoid from 'nanoid';
 import { setRoomUsers, getRoomUsers, getRoom } from "@src/lib/redis";
 import { SocketEvents } from "./config";
 import { Socket } from "socket.io";
 import { Room } from "@src/models/types";
+import type { ChatMessage } from '@src/models/types';
 
 export const addNewUserToRoom = async (roomId: string, socket: Socket, name: string) => {
     const roomUsers = await filterDisconnectedUsers(roomId, Array.from(socket.nsp.sockets.keys())) || {};
@@ -46,3 +48,18 @@ export const sendRoomDataToClient = async (socket: Socket, roomId: string) => {
         socket.emit(SocketEvents.ROOM_DATA, roomData as Room);
     }
 }
+
+export const nanoidCustom = () => {
+    const nanoidCustom = nanoid.customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 15);  
+    return nanoidCustom();
+}
+export const createNewMessage = (text: string, senderId: string, senderName: string): ChatMessage => {
+    return {
+        id: `msg_${nanoidCustom()}`,
+        text,
+        senderId,
+        senderName,
+        sentAt: new Date().getTime(),
+    };
+}
+

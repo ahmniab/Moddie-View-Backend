@@ -28,6 +28,13 @@ export const initializeRoomService = (io: Server) => {
             socket.disconnect(); // Disconnect unauthorized namespace
             return next(new Error('Room not found'));
         }
+
+        const name = socket.handshake.auth.name;
+
+        if (!name || typeof name !== 'string') {
+            return next(new Error("Invalid or missing name"));
+        }
+        socket.data.name = name;
         
         next();
     });
@@ -65,8 +72,9 @@ const initializeRoomNamespace = (io: Server, roomId: string) => {
         next();
     });
 
-    io.of(roomId).on(SocketEvents.CONNECTION, async (socket) => {        
-        await addNewUserToRoom(roomId, socket, "no Name");
+    io.of(roomId).on(SocketEvents.CONNECTION, async (socket) => {     
+           
+        await addNewUserToRoom(roomId, socket, socket.data.name || "Moddie Anonymous");
         mapUsersCommands(socket, roomId);
         mapChatCommands(socket, roomId);
         mapVideoCommands(socket, roomId);

@@ -24,6 +24,7 @@ export const mapUsersCommands = async ( socket: Socket, roomId: string ) => {
         }
         
         roomUsers[socket.id].name = newName;
+        socket.data.name = newName;
         setRoomUsers(roomId, roomUsers);
         socket.nsp.emit(SocketEvents.USERS_UPDATE, roomUsers);
     });

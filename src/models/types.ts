@@ -85,3 +85,10 @@ export interface ChatReaction {
   senderId: string;
   reactedAt: number;
 }
+
+export type notification = {
+  id: string;
+  type: "play" | "pause" | "seek" | "videoChange" | "join" | "leave" | "playbackRate";
+  producerName: string;
+  createdAt: number;
+};

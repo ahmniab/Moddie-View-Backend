@@ -3,8 +3,14 @@ import { getRoom, setRoom } from "@src/lib/redis";
 import { SocketEvents } from "./config";
 import { RedisRoom, RoomContent } from "@src/models/types";
 import logger from 'jet-logger';
-import { calculateVideoTime } from "../hepers";
-import { createNewMessage } from "./helpers";
+import { 
+    calculateVideoTime, 
+    createContentChangeEventNotification, 
+    createPauseEventNotification, 
+    createPlaybackRateChangeEventNotification, 
+    createPlayEventNotification, 
+    createSeekEventNotification 
+} from "../hepers";
 
 export const mapVideoCommands = ( socket: Socket, roomId: string ) => {
 
@@ -18,7 +24,8 @@ export const mapVideoCommands = ( socket: Socket, roomId: string ) => {
         await setRoom(room);
 
         socket.nsp.emit(SocketEvents.CONTENT_CHANGE, room.roomContent);
-        socket.nsp.emit(SocketEvents.NEW_CHAT_MESSAGE, createNewMessage(`I Just Changed The Content,`, socket.id, room.users[socket.id].name));
+        socket.nsp.emit(SocketEvents.NEW_NOTIFICATION, 
+            createContentChangeEventNotification(room.users[socket.id].name));
     });
 
     socket.on(SocketEvents.CONTENT_VIDEO_PLAYBACK_RATE_CHANGE, async (playbackRate: number) => {
@@ -30,7 +37,8 @@ export const mapVideoCommands = ( socket: Socket, roomId: string ) => {
         room.roomContent.playbackRate = playbackRate;
         await setRoom(room);
         socket.nsp.emit(SocketEvents.CONTENT_VIDEO_PLAYBACK_RATE_CHANGE, room.roomContent);
-        socket.nsp.emit(SocketEvents.NEW_CHAT_MESSAGE, createNewMessage(`I Just Changed The Playback Rate To ${playbackRate}x`, socket.id, room.users[socket.id].name));
+        socket.nsp.emit(SocketEvents.NEW_NOTIFICATION,
+            createPlaybackRateChangeEventNotification(room.users[socket.id].name));
     });
 
     socket.on(SocketEvents.CONTENT_VIDEO_PLAY, async () => {
@@ -43,7 +51,8 @@ export const mapVideoCommands = ( socket: Socket, roomId: string ) => {
         room.roomContent.isPlaying = true;
         await setRoom(room);
         socket.nsp.emit(SocketEvents.CONTENT_VIDEO_PLAY, room.roomContent);
-        socket.nsp.emit(SocketEvents.NEW_CHAT_MESSAGE, createNewMessage("I Just Played The Video", socket.id, room.users[socket.id].name));
+        socket.nsp.emit(SocketEvents.NEW_NOTIFICATION, 
+            createPlayEventNotification(room.users[socket.id].name));
         logger.info(`Socket ${socket.id} played the video in room ${roomId} (done)`);
     });
 
@@ -56,7 +65,8 @@ export const mapVideoCommands = ( socket: Socket, roomId: string ) => {
         room.roomContent.isPlaying = false;
         await setRoom(room);
         socket.nsp.emit(SocketEvents.CONTENT_VIDEO_PAUSE, room.roomContent);
-        socket.nsp.emit(SocketEvents.NEW_CHAT_MESSAGE, createNewMessage("I Just Paused The Video", socket.id, room.users[socket.id].name));
+        socket.nsp.emit(SocketEvents.NEW_NOTIFICATION, 
+            createPauseEventNotification(room.users[socket.id].name));
         logger.info(`Socket ${socket.id} paused the video in room ${roomId} (done)`);
     });
 
@@ -69,7 +79,8 @@ export const mapVideoCommands = ( socket: Socket, roomId: string ) => {
         room.roomContent.videoTime = time;
         await setRoom(room);
         socket.nsp.emit(SocketEvents.CONTENT_VIDEO_SEEK, room.roomContent);
-        socket.nsp.emit(SocketEvents.NEW_CHAT_MESSAGE, createNewMessage(`I Just Sought The Video To ${Math.floor(time)} Seconds`, socket.id, room.users[socket.id].name));
+        socket.nsp.emit(SocketEvents.NEW_NOTIFICATION, 
+            createSeekEventNotification(room.users[socket.id].name));
     });
 
     socket.on(SocketEvents.CONTENT_VIDEO_SYNC, async () => {

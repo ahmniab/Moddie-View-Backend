@@ -4,6 +4,10 @@ import { SocketEvents } from "./config";
 import { Socket } from "socket.io";
 import { Room } from "@src/models/types";
 import type { ChatMessage } from '@src/models/types';
+import { 
+    createJoinEventNotification, 
+    createLeaveEventNotification 
+} from '../hepers';
 
 export const addNewUserToRoom = async (roomId: string, socket: Socket, name: string) => {
     const roomUsers = await filterDisconnectedUsers(roomId, Array.from(socket.nsp.sockets.keys())) || {};
@@ -14,6 +18,8 @@ export const addNewUserToRoom = async (roomId: string, socket: Socket, name: str
     const added = await setRoomUsers(roomId, updatedUsers);
     if (added) {
         socket.nsp.emit(SocketEvents.USERS_UPDATE, updatedUsers);
+        socket.nsp.emit(SocketEvents.NEW_NOTIFICATION, 
+            createJoinEventNotification(name));
     }
 }
 
@@ -25,6 +31,8 @@ export const removeUserFromRoom = async (roomId: string, socket: Socket) => {
     );
     await setRoomUsers(roomId, updatedUsers);
     socket.nsp.emit(SocketEvents.USERS_UPDATE, updatedUsers);
+    socket.nsp.emit(SocketEvents.NEW_NOTIFICATION, 
+        createLeaveEventNotification(socket.data.name));
 }
 
 export const getUsersInRoom = async (roomId: string) => {

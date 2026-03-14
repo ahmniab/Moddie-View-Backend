@@ -20,4 +20,6 @@ export const enum SocketEvents {
     NEW_CHAT_MESSAGE                        = "CHAT:newChatMessage",
     CHAT_REACT_ON_MESSAGE                   = "CHAT:reactOnMessage",
     NEW_CHAT_REACTION                       = "CHAT:newChatReaction",
+
+    NEW_NOTIFICATION                        = "NOTIFICATION:new",
 }

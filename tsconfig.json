@@ -25,9 +25,5 @@
     "eslint.config.ts",
     "vitest.config.mts"
   ],
-  "exclude": ["src/public/*"],
-  "type": "module",
-  "engines": {
-    "node": "22.x"
-  }
+  "exclude": ["src/public/*"]
 }

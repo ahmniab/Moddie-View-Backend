@@ -15,7 +15,7 @@ import {
 export const mapVideoCommands = ( socket: Socket, roomId: string ) => {
 
     socket.on(SocketEvents.CONTENT_CHANGE, async (content: RoomContent) => {
-        logger.info(`Socket ${socket.id} changed the content in room ${roomId} to ${content ? content : "null"}`);    
+        logger.info(`Socket ${socket.id} changed the content in room ${roomId} to ${content ? JSON.stringify(content) : "null"}`);    
         const room = await getRoom(roomId);
         if (!room) {
             return;
@@ -93,10 +93,9 @@ export const mapVideoCommands = ( socket: Socket, roomId: string ) => {
     });
 }
 
-const syncVideoTime = async (room: RedisRoom) => {
+const syncVideoTime = (room: RedisRoom) => {
     if (!room || !room.roomContent) {
         return;
     }
-    const currentTime = new Date().getTime();
     room.roomContent.videoTime = calculateVideoTime(room.roomContent.videoTime, room.roomContent.lastTimePlayed);
 }

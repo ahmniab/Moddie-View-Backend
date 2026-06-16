@@ -1,4 +1,4 @@
-import { RedisRoom, Room } from "../../models/types";
+import { RedisRoom } from "../../models/types";
 import { generateUUID } from "@src/common/utils/hepers";
 import { createRoomJwt } from "@src/lib/jwt";
 

@@ -59,11 +59,11 @@ app.use((err: Error, _: Request, res: Response, next: NextFunction) => {
 
 app.get(JetPaths.Youtube.Get(), YoutubeRoutes.search);
 
-app.post(JetPaths.Room.Post, async (req, res) => {
+app.post(JetPaths.Room.Post, (req, res) => {
     let name : string | undefined;
     try {
-        name = req.body.name;
-    } catch (error) {
+        name = (req.body as { name?: string })?.name;
+    } catch (_error) {
         name = undefined;
     }
     return res.status(HttpStatusCodes.CREATED).json(createNewRoom(io, name));

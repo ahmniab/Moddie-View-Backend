@@ -32,7 +32,7 @@ export const removeUserFromRoom = async (roomId: string, socket: Socket) => {
     await setRoomUsers(roomId, updatedUsers);
     socket.nsp.emit(SocketEvents.USERS_UPDATE, updatedUsers);
     socket.nsp.emit(SocketEvents.NEW_NOTIFICATION, 
-        createLeaveEventNotification(socket.data.name));
+    createLeaveEventNotification(String((socket.data as { name?: string })?.name ?? "Unknown User")));
 }
 
 export const getUsersInRoom = async (roomId: string) => {
@@ -50,7 +50,7 @@ export const filterDisconnectedUsers = async (roomId: string, activeSocketIds: s
 }
 
 export const sendRoomDataToClient = async (socket: Socket, roomId: string) => {
-        filterDisconnectedUsers(roomId, Array.from(socket.nsp.sockets.keys()));
+        void filterDisconnectedUsers(roomId, Array.from(socket.nsp.sockets.keys()));
     const roomData = await getRoom(roomId);
     if (roomData) {
         socket.emit(SocketEvents.ROOM_DATA, roomData as Room);

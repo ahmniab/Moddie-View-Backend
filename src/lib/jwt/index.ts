@@ -3,7 +3,7 @@ import EnvVars from '@src/common/constants/env';
 
 const secretKey = EnvVars.JwtSecret;
 
-export const createRoomJwt = (roomId: string): string => {
+export const createRoomJwt = (_roomId: string): string => {
     if (!secretKey) {
         throw new Error("JWT secret key is not defined");
     }
@@ -27,7 +27,7 @@ export const verifyRoomJwt = (token: string): jwt.JwtPayload => {
             throw new Error("JWT token has expired");
         }
         return decoded;
-    } catch (err) {
+    } catch (_err) {
         throw new Error("Invalid JWT token");
     }
 }

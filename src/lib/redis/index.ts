@@ -1,7 +1,6 @@
 import redis from './config';
 import { RedisRoom, Users } from '../../models/types';
 import { jsonStringify, jsonParse } from '@src/common/utils/hepers';
-import { validateUUID } from '@src/common/utils/validators';
 import EnvVars from '@src/common/constants/env';
 
 export const getRoom = async (roomId: string): Promise<RedisRoom | null> => {

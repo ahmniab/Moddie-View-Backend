@@ -13,6 +13,7 @@ async function search(req: Req, res: Res) {
   const query = req.params.query;
   const results: YoutubeVideo[] = (await searchYouTubeVideos(query)).map((video) => ({
     id: video.id?.videoId || '',
+    platform: 'youtube',
     title: video.snippet?.title || '',
     description: video.snippet?.description || '',
     thumbnail: {
